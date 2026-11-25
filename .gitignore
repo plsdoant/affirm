@@ -27,3 +27,6 @@ models/
 .DS_Store
 .vscode/
 .idea/
+
+# Model outputs embed dataset transcripts (UWB-ATCC is CC BY-NC-SA, ATCOSIM research-only)
+results/hyps/
