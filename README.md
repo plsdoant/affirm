@@ -34,13 +34,11 @@ instructions, and check what controllers said against what planes actually did.
 - Live map demo with transcripts shown next to each plane
 - Readback check (stretch goal): flag wrong pilot readbacks
 
-## Build order (~14 weeks part-time)
+## Build order
 
-| Weeks | Milestone |
-|-------|-----------|
-| 1–2   | Baselines + eval: text normalizer, scoring |
-| 3–5   | Fine-tune Whisper (step 3): LoRA + augmentation |
-| 4–8   | Receivers + own data (steps 1–2): record a few weeks, hand-label a test set |
-| 8–11  | Context + extraction (steps 4–5): callsign prompts, command JSON |
-| 11–14 | Verify + self-train (step 6): flight-data check, demo, write-up |
-| 14+   | Readback check (stretch) |
+Baselines + eval: text normalizer, scoring |
+Fine-tune Whisper (step 3): LoRA + augmentation |
+Receivers + own data (steps 1–2): record a few weeks, hand-label a test set |
+Context + extraction (steps 4–5): callsign prompts, command JSON |
+Verify + self-train (step 6): flight-data check, demo, write-up |
+Readback check (stretch) |
