@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Environment / secrets
+.env
+.env.*
+
+# Data, audio, and model artifacts (keep out of git)
+data/
+recordings/
+*.wav
+*.flac
+*.mp3
+checkpoints/
+models/
+*.safetensors
+*.pt
+*.bin
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
