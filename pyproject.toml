@@ -1,0 +1,22 @@
+[project]
+name = "affirm"
+version = "0.1.0"
+description = "ATC speech to verified commands"
+authors = [
+    { name = "plsdoant", email = "danieldoan612@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "huggingface-hub>=2.4.0",
+    "jiwer>=4.0.0",
+    "numpy>=2.5.5",
+    "pyarrow>=26.0.1",
+    "soundfile>=0.14.0",
+    "soxr>=1.1.0",
+    "torch>=2.15.0",
+    "transformers>=5.24.1",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.28,<0.12.0"]
+build-backend = "uv_build"
