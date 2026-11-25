@@ -36,9 +36,9 @@ instructions, and check what controllers said against what planes actually did.
 
 ## Build order
 
-Baselines + eval: text normalizer, scoring |
-Fine-tune Whisper (step 3): LoRA + augmentation |
-Receivers + own data (steps 1–2): record a few weeks, hand-label a test set |
-Context + extraction (steps 4–5): callsign prompts, command JSON |
-Verify + self-train (step 6): flight-data check, demo, write-up |
-Readback check (stretch) |
+1. **Baselines + eval** — text normalizer, scoring
+2. **Fine-tune Whisper** (step 3) — LoRA + augmentation
+3. **Receivers + own data** (steps 1–2) — record a few weeks, hand-label a test set
+4. **Context + extraction** (steps 4–5) — callsign prompts, command JSON
+5. **Verify + self-train** (step 6) — flight-data check, demo, write-up
+6. **Readback check** (stretch)
