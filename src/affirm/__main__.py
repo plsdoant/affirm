@@ -1,4 +1,4 @@
-"""affirm CLI: `python -m affirm {download,transcribe,score}`."""
+"""affirm CLI: `python -m affirm {download,transcribe,repair,score}`."""
 
 from __future__ import annotations
 
@@ -20,6 +20,10 @@ def main() -> None:
     t.add_argument("--max-utts", type=int, default=None, help="deterministic per-set subset size")
     t.add_argument("--batch-size", type=int, default=8)
 
+    r = sub.add_parser("repair", help="re-decode looping outputs with temperature fallback -> <model>+fallback")
+    r.add_argument("model")
+    r.add_argument("--sets", nargs="+", default=list(data.CORPORA), choices=list(data.CORPORA))
+
     s = sub.add_parser("score", help="score every hypothesis file under results/hyps")
     s.add_argument("--bootstrap", type=int, default=1000)
 
@@ -30,6 +34,10 @@ def main() -> None:
         from .transcribe import transcribe
 
         transcribe(args.model, args.sets, args.max_utts, args.batch_size)
+    elif args.cmd == "repair":
+        from .transcribe import repair
+
+        repair(args.model, args.sets)
     elif args.cmd == "score":
         from .score import main as score_main
 

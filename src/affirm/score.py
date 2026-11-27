@@ -105,7 +105,10 @@ def main(n_boot: int = 1000) -> None:
     order = list(MODELS)
     model_dirs = sorted(
         (p for p in HYPS_DIR.iterdir() if p.is_dir()),
-        key=lambda p: (order.index(p.name) if p.name in order else len(order), p.name),
+        key=lambda p: (
+            order.index(p.name.split("+")[0]) if p.name.split("+")[0] in order else len(order),
+            p.name,
+        ),
     )
     scores: list[Score] = []
     for mdir in model_dirs:
