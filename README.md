@@ -53,12 +53,33 @@ uv pip install -e . pytest
 
 python -m affirm download                       # ~3 GB of parquet into data/raw/ (gitignored)
 python -m affirm transcribe whisper-atc         # or whisper-large-v3, whisper-large-v3-turbo, any HF repo id
+python -m affirm repair whisper-atc             # re-decode looping outputs -> whisper-atc+fallback
 python -m affirm score                          # -> results/baselines.md, results/summary.json
 pytest
 ```
 
-`transcribe` resumes where it left off; `--max-utts N` scores a fixed, model-independent subset
-for quick checks.
+`transcribe` decodes greedily and resumes where it left off; `--max-utts N` scores a fixed,
+model-independent subset for quick checks. Greedy decoding sometimes gets stuck repeating a word
+(`and and and …`) on long clips. `repair` finds those outputs (gzip compression ratio > 2.4, as in
+OpenAI's Whisper) and re-decodes only them with Whisper's temperature fallback, writing a
+`<model>+fallback` variant. Both variants are scored.
+
+### Results
+
+WER % after normalizing (95% bootstrap CI in [`results/baselines.md`](results/baselines.md)), best
+decoding per model:
+
+| model | ATCO2 | ATCOSIM | UWB-ATCC | digit errors (ATCO2 / ATCOSIM / UWB) |
+|---|---|---|---|---|
+| Whisper-ATC +fallback | 42.2 | **13.5** | **49.2** | 34.8 / 8.1 / 28.9 |
+| large-v3 (+fallback) | **31.2** | 17.7 | 59.0 | **7.8 / 1.7 / 27.5** |
+| large-v3-turbo +fallback | 33.0 | 19.4 | 63.1 | 9.5 / 1.9 / 28.9 |
+
+**Bar to beat: the best baseline on each set, for both WER and digit errors**, not Whisper-ATC
+alone. Whisper-ATC wins WER on ATCOSIM and UWB-ATCC, but plain large-v3 beats it on ATCO2 and
+gets far more digits right (flight levels, headings, frequencies: what verification depends on).
+Whisper-ATC also deletes ~24% of reference words on ATCO2 and UWB-ATCC; still to investigate
+whether that is the model or a setup mismatch.
 
 ### Eval sets
 
@@ -68,7 +89,7 @@ for quick checks.
 | `atcosim` | `jlvdoorn/atcosim` validation | 1,913 | 2.09 h | simulated controller speech, clean mic |
 | `uwb_atcc` | `Jzuluaga/uwb_atcc` test | 2,822 | 2.43 h | real Czech ATC radio, noisy, both sides |
 
-The bar to beat is [`jlvdoorn/whisper-large-v3-atco2-asr-atcosim`](https://huggingface.co/jlvdoorn/whisper-large-v3-atco2-asr-atcosim)
+The ATC baseline is [`jlvdoorn/whisper-large-v3-atco2-asr-atcosim`](https://huggingface.co/jlvdoorn/whisper-large-v3-atco2-asr-atcosim)
 (TU Delft's Whisper-ATC, large-v3 fine-tuned on the ATCO2 and ATCOSIM *train* splits above). The
 ATCO2 and ATCOSIM evals use jlvdoorn's own validation splits so that model is scored on audio it
 never trained on; the `Jzuluaga/*` ATCO2/ATCOSIM test splits are a different random cut and overlap
@@ -95,6 +116,7 @@ comparison is void.
 | `ah`, `ehm`, `heading(-ding)`, `re-` | dropped / `heading` / dropped |
 
 Numbers are always spelled digit by digit, so a grouped reading and a digit-wise reading of the
-same value match. The test cases are in `tests/test_normalize.py`; add one whenever a new mismatch
+same value match. It matters: large-v3 scores 66.9% WER on ATCOSIM with only lowercasing and
+punctuation removal, 17.7% normalized. The test cases are in `tests/test_normalize.py`; add one whenever a new mismatch
 shows up in model output. Caveats: UWB-ATCC segments sometimes cut words in half (`fiv`, `imme`),
 and ATCO2 keeps non-English greetings (`dobrý den`); both count as errors for every model alike.
