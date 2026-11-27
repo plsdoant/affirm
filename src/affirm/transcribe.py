@@ -77,7 +77,11 @@ def transcribe(model: str, sets: list[str], max_utts: int | None = None, batch_s
         path = out_dir / f"{name}.jsonl"
         done = set()
         if path.exists():
-            done = {json.loads(l)["id"] for l in path.read_text().splitlines() if l.strip()}
+            raw = path.read_text()
+            if raw and not raw.endswith("\n"):  # killed mid-write: drop the partial last line
+                raw = raw[: raw.rfind("\n") + 1]
+                path.write_text(raw)
+            done = {json.loads(l)["id"] for l in raw.splitlines() if l.strip()}
         all_ids = keep or {u.id for u in data.iter_utterances(name, split, with_audio=False)}
         todo = data.iter_utterances(name, split, ids=all_ids - done)
         total = len(all_ids)
